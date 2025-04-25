@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">WebDevCourseApp</string>
+    <string name="registration">Regisztráció</string>
+    <string name="user_name">user_name</string>
+    <string name="logoff">Kijelentkezés</string>
+    <string name="login">Bejelentkezés</string>
+    <string name="email">Email</string>
+    <string name="password">Jelszó</string>
+</resources>
