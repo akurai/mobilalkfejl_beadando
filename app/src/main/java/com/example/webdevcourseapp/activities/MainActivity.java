@@ -1,4 +1,4 @@
-package com.example.webdevcourseapp;
+package com.example.webdevcourseapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import android.view.animation.AnimationUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.webdevcourseapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 

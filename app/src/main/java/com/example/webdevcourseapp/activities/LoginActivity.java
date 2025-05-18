@@ -1,4 +1,4 @@
-package com.example.webdevcourseapp;
+package com.example.webdevcourseapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.webdevcourseapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 
 
