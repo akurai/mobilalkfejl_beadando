@@ -66,6 +66,18 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 .limit(10);
     }
 
+    public Query getDescriptionFilteredQuery() {
+        return db.collection("courses")
+                .whereGreaterThan("description", "M")
+                .orderBy("description");
+    }
+
+    public Query getLatestCoursesQuery() {
+        return db.collection("courses")
+                .orderBy("title", Query.Direction.DESCENDING)
+                .limit(5);
+    }
+
     @NonNull
     @Override
     public CourseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
