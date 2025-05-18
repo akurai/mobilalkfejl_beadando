@@ -51,7 +51,7 @@ public class CourseListActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new CourseAdapter(courseList);
+        adapter = new CourseAdapter(courseList, this::deleteCourse);
         recyclerView.setAdapter(adapter);
 
         addCourseButton.setOnClickListener(view -> {
@@ -88,6 +88,17 @@ public class CourseListActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void deleteCourse(Course course) {
+        if (course.getId() != null) {
+            db.collection("courses").document(course.getId())
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Kurzus törölve!", Toast.LENGTH_SHORT).show();
+                        fetchCourses();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Törlési hiba: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        }
+    }
 }
-
-

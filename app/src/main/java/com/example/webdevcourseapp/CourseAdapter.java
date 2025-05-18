@@ -3,6 +3,7 @@ package com.example.webdevcourseapp;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,15 +16,21 @@ import java.util.List;
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
 
     private List<Course> courseList;
+    private OnCourseDeleteListener deleteListener;
 
-    public CourseAdapter(List<Course> courseList) {
+    public interface OnCourseDeleteListener {
+        void onDelete(Course course);
+    }
+
+    public CourseAdapter(List<Course> courseList, OnCourseDeleteListener deleteListener) {
         this.courseList = courseList;
+        this.deleteListener = deleteListener;
     }
 
     @NonNull
     @Override
     public CourseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_2, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_course, parent, false);
         return new CourseViewHolder(view);
     }
 
@@ -32,6 +39,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         Course course = courseList.get(position);
         holder.titleText.setText(course.getTitle());
         holder.descText.setText(course.getDescription());
+        holder.deleteIcon.setOnClickListener(v -> deleteListener.onDelete(course));
     }
 
     @Override
@@ -42,11 +50,13 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     static class CourseViewHolder extends RecyclerView.ViewHolder {
         TextView titleText;
         TextView descText;
+        ImageView deleteIcon;
 
         public CourseViewHolder(@NonNull View itemView) {
             super(itemView);
-            titleText = itemView.findViewById(android.R.id.text1);
-            descText = itemView.findViewById(android.R.id.text2);
+            titleText = itemView.findViewById(R.id.textCourseTitle);
+            descText = itemView.findViewById(R.id.textCourseDescription);
+            deleteIcon = itemView.findViewById(R.id.iconDelete);
         }
     }
 }
