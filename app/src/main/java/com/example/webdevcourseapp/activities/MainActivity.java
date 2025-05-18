@@ -50,6 +50,10 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
+            Intent intent = new Intent(MainActivity.this, CourseListActivity.class);
+            startActivity(intent);
+            finish();
+
             String email = user.getEmail();
             userText.setText("Bejelentkezve: " + email);
             loginButton.setVisibility(TextView.GONE);
