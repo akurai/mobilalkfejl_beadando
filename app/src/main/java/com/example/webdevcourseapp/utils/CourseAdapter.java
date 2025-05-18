@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.webdevcourseapp.R;
 import com.example.webdevcourseapp.models.Course;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.List;
 
@@ -22,16 +23,17 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
     private List<Course> courseList;
     private OnCourseDeleteListener deleteListener;
+    private Runnable refreshCallback;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private Context context;
 
     public interface OnCourseDeleteListener {
         void onDelete(Course course);
     }
 
-    public CourseAdapter(List<Course> courseList, OnCourseDeleteListener deleteListener) {
+    public CourseAdapter(List<Course> courseList, OnCourseDeleteListener deleteListener, Runnable refreshCallback) {
         this.courseList = courseList;
         this.deleteListener = deleteListener;
+        this.refreshCallback = refreshCallback;
     }
 
     public void showAddCourseDialog(Context context, Runnable onCourseAdded) {
@@ -57,6 +59,13 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 .show();
     }
 
+    public Query getIndexedQuery() {
+        return db.collection("courses")
+                .whereGreaterThan("title", "A")
+                .orderBy("title")
+                .limit(10);
+    }
+
     @NonNull
     @Override
     public CourseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -72,18 +81,18 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
         holder.deleteIcon.setOnClickListener(v -> deleteListener.onDelete(course));
 
-        holder.itemView.setOnClickListener(v -> showEditDialog(holder.itemView, course));
+        holder.itemView.setOnClickListener(v -> showEditDialog(holder.itemView.getContext(), course));
     }
 
-    private void showEditDialog(View view, Course course) {
-        View dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.dialog_edit_course, null);
+    private void showEditDialog(Context context, Course course) {
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_course, null);
         EditText editTitle = dialogView.findViewById(R.id.editCourseTitle);
         EditText editDesc = dialogView.findViewById(R.id.editCourseDescription);
 
         editTitle.setText(course.getTitle());
         editDesc.setText(course.getDescription());
 
-        new AlertDialog.Builder(view.getContext())
+        new AlertDialog.Builder(context)
                 .setTitle("Kurzus szerkesztése")
                 .setView(dialogView)
                 .setPositiveButton("Mentés", (dialog, which) -> {
@@ -92,10 +101,10 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
                     if (!newTitle.isEmpty() && !newDesc.isEmpty() && course.getId() != null) {
                         db.collection("courses").document(course.getId())
-                                .update("title", newTitle, "description", newDesc);
-                        course.setTitle(newTitle);
-                        course.setDescription(newDesc);
-                        notifyDataSetChanged();
+                                .update("title", newTitle, "description", newDesc)
+                                .addOnSuccessListener(aVoid -> {
+                                    if (refreshCallback != null) refreshCallback.run();
+                                });
                     }
                 })
                 .setNegativeButton("Mégse", null)
